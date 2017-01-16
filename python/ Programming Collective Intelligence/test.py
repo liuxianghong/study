@@ -77,5 +77,16 @@ def transformPrefs(prefs):
 			result[item][person] = prefs[person][item]
 	return result
 			
+def calculateSimilarItems(prefs,n=10):
+	result = {}
+	itemPrefs = transformPrefs(prefs)
+	c = 0
+	for item in itemPrefs:
+		c += 1
+		if c % 100 == 0:
+			print "%d / %d" % (c,c.len(itemPrefs))
+		scores = topMatches(itemPrefs, item, n = n, similarity = sim_distance)
+		result[item] = scores
+	return result
 
 
