@@ -1,9 +1,11 @@
-critics={'Lisa':{'Lady':1.8, 'Snakes1':3.0, 'Snakes2':3.0, 'Snakes3':3.0, 'Snakes4':3.0}
+critics={'Lisa':{'Lady':1.8, 'Snakes1':3.0, 'Snakes2':3.0, 'Snakes3':3.0}
 ,'Lisb':{'Lady':5.5, 'Snakes1':2.0, 'Snakes2':4.0, 'Snakes3':3.5, 'Snakes4':1.8}
 ,'Lisc':{'Lady':4.5, 'Snakes1':6.0, 'Snakes2':4.4, 'Snakes3':2.5, 'Snakes4':2.8}
 ,'Lisd':{'Lady':2.5, 'Snakes1':2.1, 'Snakes2':4.5, 'Snakes3':1.5, 'Snakes4':3.4}
-,'Lise':{'Lady':1.8, 'Snakes1':3.0, 'Snakes2':3.0, 'Snakes3':3.0, 'Snakes4':3.0}}
+,'Lise':{'Lady':1.8, 'Snakes1':3.0, 'Snakes2':3.0, 'Snakes3':3.0, 'Snakes4':5.0}}
+
 from math import sqrt
+
 def sim_distance(prefs,person1,person2):
 	si = {}
 	for item in prefs[person1]:
@@ -46,5 +48,34 @@ def topMatches(prefs,person,n=5,similarity=sim_pearson):
 	scores.sort()
 	scores.reverse()
 	return scores[0:n]
+
+def getRecommend(prefs,person,similarity=sim_pearson):
+	totals = {}
+	simSums = {}
+	for other in prefs:
+		if other == person:
+			continue
+		sim = similarity(prefs,person,other)
+		if sim <= 0:
+			continue
+		for item in prefs[other]:
+			if item not in prefs[person] or prefs[person][item] == 0:
+				totals.setdefault(item,0)
+				totals[item] += prefs[other][item] * sim
+				simSums.setdefault(item,0)
+				simSums[item] += sim
+	rankings = [(total / simSums[item],item) for item,total in totals.items()]
+	rankings.sort()
+	rankings.reverse()
+	return rankings
+
+def transformPrefs(prefs):
+	result = {}
+	for person in prefs:
+		for item in prefs[person]:
+			result.setdefault(item,{})
+			result[item][person] = prefs[person][item]
+	return result
+			
 
 
